@@ -1,0 +1,27 @@
+services:
+  envoy:
+    image: envoyproxy/envoy:v1.31-latest
+    volumes:
+      - ./envoy.yaml:/etc/envoy/envoy.yaml
+    ports:
+      - "8080:8080"
+      - "9901:9901"
+      - "9091:9091"
+  app:
+    build: .
+    expose: 
+      - "9090"
+  prometheus:
+    image: prom/prometheus:latest
+    volumes:
+      - ./prometheus.yaml:/etc/prometheus/prometheus.yml
+    ports:
+      - "9090:9090"
+  grafana:
+    image: grafana/grafana:latest
+    ports:
+      - "3000:3000"
+    depends_on:
+      - prometheus
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=admin
